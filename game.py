@@ -57,12 +57,10 @@ def run_game():
         print("Remaining players: ")
         print_players(players)
         vote = input("\nVote a player or skip: ")
-        while (vote not in players.keys()) and (vote != "Skip"):
-            print(vote)
-            print("Red" in players.keys())
+        while (vote not in players.keys()) and (vote.lower != "skip"):
             vote = input("Not a player. Try again: ")
 
-        if vote != "Skip":
+        if vote.lower() != "skip":
             ejected = players.pop(vote)
             if ejected == "Crewmate":
                 print(vote + " was not an imposter")
