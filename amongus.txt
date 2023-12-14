@@ -1,0 +1,17 @@
+Players: Player1, Player2, Player3, Player4, Player5
+Roles: Crewmate, Imposter
+Locations: Cafeteria, Weapons, O2, Navigation, Shields, Communications, Admin, Storage, Electrical, Lower Engine, Upper Engine, Reactor, Security, MedBay
+Proprietate pentru locatii: task | nu task
+
+Messages:
+
+The body was in [location]
+I saw [crew] kill [dead] at location
+I saw [crew] vent in location
+[crew] was at [location]
+[crew] wasn't at [location]
+I did [task] at location
+
+[crew] says that [crew] is [role]
+
+[crew] says [crew] did [task] at [location]

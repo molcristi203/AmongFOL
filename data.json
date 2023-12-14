@@ -1,0 +1,121 @@
+{
+    "tasks": [
+      "Download Data",
+      "Empty Garbage",
+      "Fix Wiring",
+      "Accept Diverted Power"
+    ],
+    "locations": [
+      {
+        "name": "Cafeteria",
+        "tasks": [
+          "Download Data",
+          "Empty Garbage",
+          "Fix Wiring"
+        ]
+      },
+      {
+        "name": "Weapons",
+        "tasks": [
+          "Accept Diverted Power",
+          "Clear Asteroids",
+          "Download Data"
+        ]
+      },
+      {
+        "name" : "Navigation",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Chart Course",
+            "Download Data",
+            "Fix Wiring",
+            "Stabilize Steering"
+        ]
+      },
+      {
+        "name" : "O2",
+        "tasks" : [
+            "Clean O2 Filter",
+            "Empty Chute",
+            "Accept Diverted Power"
+        ]
+      },
+      {
+        "name" : "Shields",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Download Data"
+        ]
+      },
+      {
+        "name" : "Communications",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Download Data"
+        ]
+      },
+      {
+        "name" : "Storage",
+        "tasks" : [
+            "Empty Garbage",
+            "Empty Chute",
+            "Fix Wiring",
+            "Fuel Engines"
+        ]
+      },
+      {
+        "name" : "Admin",
+        "tasks" : [
+            "Fix Wiring",
+            "Swipe Card",
+            "Upload Data"
+        ]
+      },
+      {
+        "name" : "Electrical",
+        "tasks" : [
+            "Calibrate Distributor",
+            "Divert Power",
+            "Download Data",
+            "Fix Wiring"
+        ]
+      },
+      {
+        "name" : "Lower Engine",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Align Engine Output",
+            "Fuel Engines"
+        ]
+      },
+      {
+        "name" : "Security",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Fix Wiring"
+        ]
+      },
+      {
+        "name" : "Reactor",
+        "tasks" : [
+            "Start Reactor",
+            "Unlock Manifolds"
+        ]
+      },
+      {
+        "name" : "Upper Engine",
+        "tasks" : [
+            "Accept Diverted Power",
+            "Align Engine Output",
+            "Fuel Engines"
+        ]
+      },
+      {
+        "name" : "MedBay",
+        "tasks" : [
+            "Inspect Sample",
+            "Submit Scan"
+        ]
+      }
+    ]
+  }
