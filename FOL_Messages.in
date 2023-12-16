@@ -1,5 +1,5 @@
 assign(max_models, -1).
-assign(domain_size, 3).
+assign(domain_size, 2).
 
 list(distinct).
     [Cafeteria, Weapons].
@@ -14,8 +14,8 @@ formulas(players_tasks).
     all x ((crewmate(x) -> -impostor(x)) & (impostor(x) -> -crewmate(x))).
     all x (location(x) -> task(x, y)).
 
-    player(player0) & player(player1) & player(player2).
-    player0 = 0 & player1 = 1 & player2 = 2.
+    player(player0) & player(player1).
+    player0 = 0 & player1 = 1.
 
     Cafeteria = 0 & Weapons = 1.
     FixWiring = 0 & EmptyGarbage = 1.
@@ -44,24 +44,39 @@ formulas(players_tasks).
     
     didTask(player0, Cafeteria) & -didTask(player0, Weapons) | -didTask(player0, Cafeteria) & didTask(player0, Weapons).
     didTask(player1, Cafeteria) & -didTask(player1, Weapons) | -didTask(player1, Cafeteria) & didTask(player1, Weapons).
-    didTask(player2, Cafeteria) & -didTask(player2, Weapons) | -didTask(player2, Cafeteria) & didTask(player2, Weapons).
+    %didTask(player2, Cafeteria) & -didTask(player2, Weapons) | -didTask(player2, Cafeteria) & didTask(player2, Weapons).
+    %---------------------------------------------------------------------------------------------------------------------------
 
+    %impostor x kills crewmate y at location
+    %all x all y (impostor(x) & crewmate(y) -> kill(x, y, Location)).
+    %all x (impostor(x) -> (exists y (crewmate(y) & kill(x, y, Location)))).
 
-    % crewmate x dead at location
+    %---------------------------------------------------------------------------------------------------------------------------
 
-    %all x (player(x) -> alive(x) | dead(x)).
-    %all x ((alive(x) -> -dead(x)) & (dead(x) -> -alive(x))).
+    %impostor x vented at location
+    %all x (impostor(x) -> vent(x, Location)).
+    %---------------------------------------------------------------------------------------------------------------------------
+    % player x seen at Location
+    all x (player(x) -> seenAt(x, Location)). %-- chestie ce o zice jocul cand facem jocul efectiv
+    
+    % player x is dead at location
+    %all x (player(x) -> deadAt(x, Location) | aliveAt(x, Location)).
+    %all x ((deadAt(x, Location) -> -aliveAt(x, Location)) & (aliveAt(x, Location) -> -deadAt(x, Location))).
 
-    %all x (alive(x) -> message(x) | -message(x)).
-    %all x (dead(x) -> -message(x)).
-    %all x (ejected(x) -> -message(x)).
+    seenAt(player0, Cafeteria) & -seenAt(player0, Weapons) | -seenAt(player0, Cafeteria) & seenAt(player0, Weapons).
+    seenAt(player1, Cafeteria) & -seenAt(player1, Weapons) | -seenAt(player1, Cafeteria) & seenAt(player1, Weapons).
 
-    %dead(player0) & location(Cafeteria).
-    %all x all y (impostor(x) & crewmate(y) -> kill(x, y, Location)). %impostor x kills crewmate y at location
+    %all players must be alive at first
+    %alive(player0) & alive(player1). - o scriem in game asta (maybe)
 
-    %all x (impostor(x) -> vent(x, Location)). %impostor x vented at location
+    %(aliveAt(player0, Cafeteria) & aliveAt(player0, Weapons)) | (deadAt(player0, Cafeteria) & deadAt(player0, Weapons)).
+    %(aliveAt(player1, Cafeteria) & aliveAt(player1, Weapons)) | (deadAt(player1, Cafeteria) & deadAt(player1, Weapons)).
 
-    %all x (player(x) -> atLocation(x, Location)). %player x is at location
+    %deadAt(player0, Cafeteria) | deadAt(player0, Weapons) -> crewmate(x).
+    %deadAt(player1, Cafeteria) | deadAt(player1, Weapons) -> crewmate(x).
+
+    % if there is a dead player in a room and a player is seen there, they are the impostor
+    all x exists y ((deadAt(y, Location) & seenAt(x, Location)) -> impostor(x)).
 
     crewmate(x) -> message(x).
     impostor(x) -> -message(x) | message(x).
@@ -70,14 +85,34 @@ end_of_list.
 
 formulas(atMostOneImpostor).
     -(impostor(x) & impostor(y) & x != y).
+    impostor(x) & impostor(y) -> x = y.
+    (exists x crewmate(x)) & (exists x impostor(x)).
 end_of_list.
 
 formulas(game).
 
+    %Case 1: We try with messages of accusation - WORKS
     %message(player0) <-> impostor(player1).
     %message(player1) <-> (-impostor(player1) & -impostor(player0)).
-    message(player0) <-> didTask(player0, EmptyGarbage) & task(Cafeteria, EmptyGarbage).
-    message(player1) <-> didTask(player1, FixWiring) & task(Cafeteria, FixWiring).
-    message(player2) <-> didTask(player2, FixWiring) & task(Weapons, FixWiring).
+
+
+    %Case 2: We try with tasks - WORKS
+    %message(player0) <-> didTask(player0, EmptyGarbage) & task(Cafeteria, EmptyGarbage).
+    %message(player1) <-> didTask(player1, FixWiring) & task(Cafeteria, FixWiring). 
+
+    %Case 3: We try with a dead body at a certain location and if the imposor is or not there - WORKS (4 models - because we don't use message and idk who is f1)
+    %aliveAt(player1, Weapons).
+    %aliveAt(player1, Cafeteria).
+    %-aliveAt(player0, Weapons).
+    %-aliveAt(player0, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
+    deadAt(player0, Weapons).
+    deadAt(player0, Cafeteria).
+    -deadAt(player1, Weapons).
+    -deadAt(player1, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
+    seenAt(player1, Weapons). % - zis de python
+    seenAt(player0, Weapons). % - zis de python
+
+    didTask(player1, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
+    didTask(player0, Weapons) & task(Weapons, FixWiring).
 
 end_of_list.
