@@ -1,52 +1,83 @@
 assign(max_models, -1).
 assign(domain_size, 3).
 
+list(distinct).
+    [Cafeteria, Weapons].
+    %, Navigation, O2, Shields, Communications, Storage, Admin, Electrical, LowerEngine, UpperEngine, Security, Reactor, MedBay].
+    [FixWiring, EmptyGarbage].
+    %, DownloadData, AcceptDivertedPower, ClearAsteroids, ChartCourse, StabilizeSteering, CleanO2Filter, EmptyChute, FuelEngines, SwipeCard, UploadData, CalibrateDistributor, DivertPower, AlignEngineOutput, StartReactor, UnlockManifolds, InspectSample, SubmitScan].
+end_of_list.
+
 formulas(players_tasks).
 
     all x (player(x) -> crewmate(x) | impostor(x)).
     all x ((crewmate(x) -> -impostor(x)) & (impostor(x) -> -crewmate(x))).
-    all x (location(x) -> task(x, Task)).
-    location(Cafeteria) | location(Weapons) | location(Navigation) | location(O2) | location(Shields) | location(Communications) |  location(Storage) | location (Admin) | location (Electrical) | location(LowerEngine) | location(UpperEngine) | location(Security) | location(Reactor) | location(MedBay).
+    all x (location(x) -> task(x, y)).
 
-    task(Cafeteria, FixWiring) & task(Cafeteria, EmptyGarbage) & task(Cafeteria, DownloadData).
-    task(Weapons, AcceptDivertedPower) & task(Weapons, ClearAsteroids) & task(Weapons, DownloadData).
-    task(Navigation, AcceptDivertedPower) & task(Navigation, ChartCourse) & task(Navigation, DownloadData) & task(Navigation, FixWiring) & task(Navigation, StabilizeSteering).
-    task(O2, CleanO2Filter) & task(O2, EmptyChute) & task(02, AcceptDivertedPower).
-    task(Shields, AcceptDivertedPower) & task(Shields, DownloadData).
-    task(Communications, AcceptDivertedPower) & task(Communications, DownloadData).
-    task(Storage, EmptyGarbage) & task(Storage, EmptyChute) & task(Storage, FixWiring) & task(Storage, FuelEngines).
-    task(Admin, FixWiring) & task(Admin, SwipeCard) & task(Admin, UploadData).
-    task(Electrical, CalibrateDistributor) & task(Electrical, DivertPower) & task(Electrical, DownloadData) & task(Electrical, FixWiring).
-    task(LowerEngine, AcceptDivertedPower) & task(LowerEngine, AlignEngineOutput) & task(LowerEngine, FuelEngines).
-    task(UpperEngine, AcceptDivertedPower) & task(UpperEngine, AlignEngineOutput) & task(UpperEngine, FuelEngines).
-    task(Security, AcceptDivertedPower) & tesk(Security, FixWiring).
-    task(Reactor, StartReactor) & task(Reactor, UnlockManifolds).
-    task(MedBay, InspectSample) & task(MedBay, SubmitScan).
+    player(player0) & player(player1) & player(player2).
+    player0 = 0 & player1 = 1 & player2 = 2.
 
-    % all x (player(x) -> didTask(x, task(Location, Task))).
-    %all x (didTask(crewmate(x), task(location(x), Task))).
-    all x (crewmate(x) -> didTask(x, Task) & task(Location, Task)). % crewmate x did task at location 
+    Cafeteria = 0 & Weapons = 1.
+    FixWiring = 0 & EmptyGarbage = 1.
 
-    %all x (body(player(x), Location)).
-    all x (player(x) -> deadBody(x, Location)). % player x dead at location
+    location(Cafeteria) | location(Weapons). %| location(Navigation) | location(O2) | location(Shields) | location(Communications) |  location(Storage) | location (Admin) | location (Electrical) | location(LowerEngine) | location(UpperEngine) | location(Security) | location(Reactor) | location(MedBay).
+    task(Cafeteria, FixWiring) & task(Cafeteria, EmptyGarbage).% & task(Cafeteria, DownloadData).
+    task(Weapons, FixWiring) & -task(Weapons, EmptyGarbage).
 
-    %all x all y (kill(impostor(x), crewmate(y), Location)).
-    all x all y (impostor(x) & crewmate(y) -> kill(x, y, Location)). %impostor x kills crewmate y at location
+    %task(Weapons, AcceptDivertedPower) & task(Weapons, ClearAsteroids) & task(Weapons, DownloadData).
+    %task(Navigation, AcceptDivertedPower) & task(Navigation, ChartCourse) & task(Navigation, DownloadData) & task(Navigation, FixWiring) & task(Navigation, StabilizeSteering).
+    %task(O2, CleanO2Filter) & task(O2, EmptyChute) & task(02, AcceptDivertedPower).
+    %task(Shields, AcceptDivertedPower) & task(Shields, DownloadData).
+    %task(Communications, AcceptDivertedPower) & task(Communications, DownloadData).
+    %task(Storage, EmptyGarbage) & task(Storage, EmptyChute) & task(Storage, FixWiring) & task(Storage, FuelEngines).
+    %task(Admin, FixWiring) & task(Admin, SwipeCard) & task(Admin, UploadData).
+    %task(Electrical, CalibrateDistributor) & task(Electrical, DivertPower) & task(Electrical, DownloadData) & task(Electrical, FixWiring).
+    %task(LowerEngine, AcceptDivertedPower) & task(LowerEngine, AlignEngineOutput) & task(LowerEngine, FuelEngines).
+    %task(UpperEngine, AcceptDivertedPower) & task(UpperEngine, AlignEngineOutput) & task(UpperEngine, FuelEngines).
+    %task(Security, AcceptDivertedPower) & tesk(Security, FixWiring).
+    %task(Reactor, StartReactor) & task(Reactor, UnlockManifolds).
+    %task(MedBay, InspectSample) & task(MedBay, SubmitScan).
 
-    all x (impostor(x) -> vent(x, Location)). %impostor x vented at location
+    % crewmate x did Task at Location -- we specify in game what the task is with task(x, y), where x - Location and y - Task
+    all x (crewmate(x) -> didTask(x, Location)).
+    all x (impostor(x) -> didTask(x, Location) | -didTask(x, Location)).
+    
+    didTask(player0, Cafeteria) & -didTask(player0, Weapons) | -didTask(player0, Cafeteria) & didTask(player0, Weapons).
+    didTask(player1, Cafeteria) & -didTask(player1, Weapons) | -didTask(player1, Cafeteria) & didTask(player1, Weapons).
+    didTask(player2, Cafeteria) & -didTask(player2, Weapons) | -didTask(player2, Cafeteria) & didTask(player2, Weapons).
 
-    all x (player(x) -> atLocation(x, Location)). %player x is at location
+
+    % crewmate x dead at location
+
+    %all x (player(x) -> alive(x) | dead(x)).
+    %all x ((alive(x) -> -dead(x)) & (dead(x) -> -alive(x))).
+
+    %all x (alive(x) -> message(x) | -message(x)).
+    %all x (dead(x) -> -message(x)).
+    %all x (ejected(x) -> -message(x)).
+
+    %dead(player0) & location(Cafeteria).
+    %all x all y (impostor(x) & crewmate(y) -> kill(x, y, Location)). %impostor x kills crewmate y at location
+
+    %all x (impostor(x) -> vent(x, Location)). %impostor x vented at location
+
+    %all x (player(x) -> atLocation(x, Location)). %player x is at location
 
     crewmate(x) -> message(x).
-    impostor(x) -> -message(x).
+    impostor(x) -> -message(x) | message(x).
 
+end_of_list.
+
+formulas(atMostOneImpostor).
+    -(impostor(x) & impostor(y) & x != y).
 end_of_list.
 
 formulas(game).
 
-    player(player0) & player(player1).
-    player0 = 0 & player1 = 1.
-    message(player0) <-> impostor(player1).
-    message(player1) <-> (-impostor(player1) & -impostor(player0)).
+    %message(player0) <-> impostor(player1).
+    %message(player1) <-> (-impostor(player1) & -impostor(player0)).
+    message(player0) <-> didTask(player0, EmptyGarbage) & task(Cafeteria, EmptyGarbage).
+    message(player1) <-> didTask(player1, FixWiring) & task(Cafeteria, FixWiring).
+    message(player2) <-> didTask(player2, FixWiring) & task(Weapons, FixWiring).
 
 end_of_list.
