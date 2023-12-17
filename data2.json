@@ -1,0 +1,25 @@
+{
+    "max_models": -1,
+    "dead_player": false,
+    "players": ["red", "black"],
+    "tasks": [
+        "EmptyGarbage",
+        "FixWiring"
+    ],
+    "locations": [
+        {
+            "name": "Cafeteria",
+            "tasks": [
+                "EmptyGarbage",
+                "FixWiring"
+            ]
+        },
+        {
+            "name": "Security",
+            "tasks": [
+                "FixWiring"
+            ]
+        }
+    ],
+    "template": "template2.in"
+}

@@ -1,0 +1,21 @@
+assign(max_models, {max_models}).
+assign(domain_size, {domain_size}).
+
+formulas(scenario).
+    all x (player(x) -> crewmate(x) | imposter(x)).
+    all x ((crewmate(x) -> -imposter(x)) & (imposter(x) -> -crewmate(x))).
+
+    imposter(x) & imposter(y) -> x = y.
+    (exists x crewmate(x)) & (exists x imposter(x)).
+
+    crewmate(x) -> message(x).
+    imposter(x) -> -message(x) | message(x).
+end_of_list.
+
+formulas(game).
+    {game}
+end_of_list.
+
+formulas(messages).
+    {messages}
+end_of_list.
