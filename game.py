@@ -178,7 +178,8 @@ class Game:
 
         for p in self.players:
             m = p.get_message()
-            print("{player} is {role}".format(player = p.get_name(), role = p.get_role()))
+            print(m)
+            #print("{player} is {role}".format(player = p.get_name(), role = p.get_role()))
             messages += m
 
         self.template = self.template.format(max_models = self.max_models, domain_size = len(self.players), game = conditions, messages = messages)
