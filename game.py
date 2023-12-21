@@ -44,6 +44,8 @@ class Location:
 class Player:
     def __init__(self, name) -> None:
         self.name = name
+        self.location = None
+        self.task = None
 
     def get_name(self):
         return self.name
@@ -80,6 +82,9 @@ class Crewmate(Player):
                 return message.format(player = (random.choice([p for p in game.players if isinstance(p, Crewmate)])).get_name())
             case "imposter({player})" | "-crewmate({player})":
                 return message.format(player = (random.choice([p for p in game.players if isinstance(p, Imposter)])).get_name())
+            case "didTask({player}, {task}) & task({location}, {task})":
+                player = random.choice([p for p in game.players if not isinstance(p, Body)])
+                return message.format(player = player.get_name(), task = player.task, location = player.location.name)
 
     def get_role(self):
         return "Crewmate"
@@ -92,6 +97,9 @@ class Imposter(Player):
         match message:
             case "crewmate({player})" | "imposter({player})" | "-crewmate({player})" | "-imposter({player})":
                 return message.format(player = (random.choice([p for p in game.players if not isinstance(p, Body)])).get_name())
+            case "didTask({player}, {task}) & task({location}, {task})":
+                player = random.choice([p for p in game.players if not isinstance(p, Body)])
+                return message.format(player = player.get_name(), task = random.choice(game.tasks), location = random.choice(game.locations).name)
             # case "crewmate({player})" | "-imposter({player})":
             #     return message.format(player = (random.choice([p for p in game.players if isinstance(p, Imposter)])).get_name())
             # case "imposter({player})" | "-crewmate({player})":
@@ -113,6 +121,8 @@ class Game:
         self.load_data(path)
 
     def init_conditions(self):
+        message = ""
+
         players_list1 = ""
         players_list2 = ""
         
@@ -127,7 +137,50 @@ class Game:
                 players_list1 += " & "
                 players_list2 += " & "
 
-        return players_list1 + players_list2
+        message += players_list1 + players_list2
+
+        if hasattr(self, "locations"):
+            locations_list1 = ""
+            locations_list2 = ""
+            task_list1 = ""
+            for i in range(len(self.tasks)):
+                task_list1 += "{task} = {v}".format(task = self.tasks[i], v = i)
+
+                if i == len(self.tasks) - 1:
+                    task_list1 += ".\n\t"
+                else:
+                    task_list1 += " & "
+
+            message += task_list1
+
+            for i in range(len(self.locations)):
+                locations_list1 += "{location} = {v}".format(location = self.locations[i].name, v = i)
+                locations_list2 += "location({location})".format(location = self.locations[i].name)
+                if i == len(self.locations) - 1:
+                    locations_list1 += ".\n\t"
+                    locations_list2 += ".\n\t"
+                else:
+                    locations_list1 += " & "
+                    locations_list2 += " | "
+
+                task_list2 = ""
+
+                for j in range(len(self.tasks)):
+                    if self.tasks[j] in self.locations[i].tasks:
+                        task_list2 += "task({location}, {task})".format(location = self.locations[i].name, task = self.tasks[j])
+                    else:
+                        task_list2 += "-task({location}, {task})".format(location = self.locations[i].name, task = self.tasks[j])
+
+                    if j == len(self.tasks) - 1:
+                        task_list2 += ".\n\t"
+                    else:
+                        task_list2 += " & "
+
+                message += task_list2
+
+            message += locations_list1 + locations_list2
+
+        return message
 
     def get_messages(self):
         return self.messages
@@ -166,6 +219,14 @@ class Game:
         for _ in players:
             self.players.append(Crewmate(players.pop()))
         
+        for p in self.players:
+            if "locations" in data:
+                location = random.choice(self.locations)
+                task = random.choice(location.tasks)
+
+                p.location = location
+                p.task = task
+
         f = open(data["template"], "r")
         self.template = f.read()
         f.close()
@@ -223,6 +284,6 @@ def run_mace4():
     return result  
 
 if __name__ == "__main__":
-    game = Game("data1.json")
+    game = Game("data2.json")
 
     game.run_game()

@@ -4,10 +4,9 @@
     "players": ["red", "black"],
     "template": "template1.in",
     "messages": [
-            "crewmate({player})",
-            "imposter({player})",
-            "-crewmate({player})",
-            "-imposter({player})"
-        ]
-
+        "crewmate({player})",
+        "imposter({player})",
+        "-crewmate({player})",
+        "-imposter({player})"
+    ]
 }
