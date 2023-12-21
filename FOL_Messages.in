@@ -52,10 +52,6 @@ formulas(players_tasks).
     %all x (impostor(x) -> (exists y (crewmate(y) & kill(x, y, Location)))).
 
     %---------------------------------------------------------------------------------------------------------------------------
-
-    %impostor x vented at location
-    %all x (impostor(x) -> vent(x, Location)).
-    %---------------------------------------------------------------------------------------------------------------------------
     % player x seen at Location
     all x (player(x) -> seenAt(x, Location)). %-- chestie ce o zice jocul cand facem jocul efectiv
     
@@ -63,8 +59,15 @@ formulas(players_tasks).
     %all x (player(x) -> deadAt(x, Location) | aliveAt(x, Location)).
     %all x ((deadAt(x, Location) -> -aliveAt(x, Location)) & (aliveAt(x, Location) -> -deadAt(x, Location))).
 
-    seenAt(player0, Cafeteria) & -seenAt(player0, Weapons) | -seenAt(player0, Cafeteria) & seenAt(player0, Weapons).
-    seenAt(player1, Cafeteria) & -seenAt(player1, Weapons) | -seenAt(player1, Cafeteria) & seenAt(player1, Weapons).
+    (seenAt(player0, Cafeteria) & -seenAt(player0, Weapons)) | (-seenAt(player0, Cafeteria) & seenAt(player0, Weapons)).
+    (seenAt(player1, Cafeteria) & -seenAt(player1, Weapons)) | (-seenAt(player1, Cafeteria) & seenAt(player1, Weapons)).
+    % asta poate e o vrajeala de mere sa nu trebuiasca sa scrii mereu seenAt si nu seenAt la acelasi player (nu e testata)
+    %seenAt(player0, Cafeteria) | seenAt(player0, Weapons).
+    %seenAt(player0, Cafeteria) -> -seenAt(player0, Weapons).
+    %seenAt(player0, Weapons) -> -seenAt(player0, Cafeteria).
+    %seenAt(player1, Cafeteria) | seenAt(player1, Weapons).
+    %seenAt(player1, Cafeteria) -> -seenAt(player1, Weapons).
+    %seenAt(player1, Weapons) -> -seenAt(player1, Cafeteria).
 
     %all players must be alive at first
     %alive(player0) & alive(player1). - o scriem in game asta (maybe)
@@ -77,6 +80,23 @@ formulas(players_tasks).
 
     % if there is a dead player in a room and a player is seen there, they are the impostor
     all x exists y ((deadAt(y, Location) & seenAt(x, Location)) -> impostor(x)).
+
+    %---------------------------------------------------------------------------------------------------------------------------
+
+    %impostor x vented at location
+    %all x (crewmate(x) -> -vent(x, Location)).
+    all x (player(x) -> vent(x, Location) | -vent(x, Location)).
+
+    % (vent(player0, Cafeteria) & -vent(player0, Weapons)) | (-vent(player0, Cafeteria) & vent(player0, Weapons)).
+    % (vent(player1, Cafeteria) & -vent(player1, Weapons)) | (-vent(player1, Cafeteria) & vent(player1, Weapons)).
+    vent(player0, Cafeteria) | vent(player0, Weapons) | -vent(player0, Cafeteria) | -vent(player0, Weapons).
+    vent(player1, Cafeteria) | vent(player1, Weapons) | -vent(player1, Cafeteria) | -vent(player1, Weapons).
+
+    %aici in loc de seenVenting ar trebui seenAt, DA NU MERE GIZI!
+    all x ((vent(x, Location) & seenVenting(x, Location)) -> impostor(x)).
+    seenVenting(player0, Cafeteria) | seenVenting(player0, Weapons) | -seenVenting(player0, Cafeteria) | -seenVenting(player0, Weapons).
+    seenVenting(player1, Cafeteria) | seenVenting(player1, Weapons) | -seenVenting(player1, Cafeteria) | -seenVenting(player1, Weapons).
+    %---------------------------------------------------------------------------------------------------------------------------
 
     crewmate(x) -> message(x).
     impostor(x) -> -message(x) | message(x).
@@ -101,18 +121,32 @@ formulas(game).
     %message(player1) <-> didTask(player1, FixWiring) & task(Cafeteria, FixWiring). 
 
     %Case 3: We try with a dead body at a certain location and if the imposor is or not there - WORKS (4 models - because we don't use message and idk who is f1)
-    %aliveAt(player1, Weapons).
-    %aliveAt(player1, Cafeteria).
-    %-aliveAt(player0, Weapons).
-    %-aliveAt(player0, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
-    deadAt(player0, Weapons).
-    deadAt(player0, Cafeteria).
+    % deadAt(player0, Weapons).
+    % deadAt(player0, Cafeteria).
+    % -deadAt(player1, Weapons).
+    % -deadAt(player1, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
+    % seenAt(player1, Weapons). % - zis de python
+    % seenAt(player0, Weapons). % - zis de python
+
+    % didTask(player1, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
+    % didTask(player0, Weapons) & task(Weapons, FixWiring).
+
+    %Case 4: We try with vents.
+    didTask(player0, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
+    didTask(player1, Weapons) & task(Weapons, FixWiring).
+
+    -deadAt(player0, Weapons).
+    -deadAt(player0, Cafeteria).
     -deadAt(player1, Weapons).
     -deadAt(player1, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
-    seenAt(player1, Weapons). % - zis de python
-    seenAt(player0, Weapons). % - zis de python
 
-    didTask(player1, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
-    didTask(player0, Weapons) & task(Weapons, FixWiring).
+    -seenVenting(player0, Cafeteria).
+    -seenVenting(player0, Weapons).
+    -seenVenting(player1, Cafeteria).
+    seenVenting(player1, Weapons).
+    -vent(player1, Cafeteria).
+    vent(player1, Weapons).
+    -vent(player0, Cafeteria).
+    -vent(player0, Weapons).
 
 end_of_list.
