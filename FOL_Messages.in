@@ -132,21 +132,21 @@ formulas(game).
     % didTask(player0, Weapons) & task(Weapons, FixWiring).
 
     %Case 4: We try with vents.
-    didTask(player0, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
-    didTask(player1, Weapons) & task(Weapons, FixWiring).
+    % didTask(player0, Cafeteria) & task(Cafeteria, FixWiring). % scriem astea ca sa nu fie mai multe scenarii in care ba is task-uri facute, ba nu
+    % didTask(player1, Weapons) & task(Weapons, FixWiring).
 
-    -deadAt(player0, Weapons).
-    -deadAt(player0, Cafeteria).
-    -deadAt(player1, Weapons).
-    -deadAt(player1, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
+    % -deadAt(player0, Weapons).
+    % -deadAt(player0, Cafeteria).
+    % -deadAt(player1, Weapons).
+    % -deadAt(player1, Cafeteria). %asta e una -vedem de fixam, daca nu lasam in python sa fie facute
 
-    -seenVenting(player0, Cafeteria).
-    -seenVenting(player0, Weapons).
-    -seenVenting(player1, Cafeteria).
-    seenVenting(player1, Weapons).
-    -vent(player1, Cafeteria).
-    vent(player1, Weapons).
-    -vent(player0, Cafeteria).
-    -vent(player0, Weapons).
+    % -seenVenting(player0, Cafeteria).
+    % -seenVenting(player0, Weapons).
+    % -seenVenting(player1, Cafeteria).
+    % seenVenting(player1, Weapons).
+    % -vent(player1, Cafeteria).
+    % vent(player1, Weapons).
+    % -vent(player0, Cafeteria).
+    % -vent(player0, Weapons).
 
 end_of_list.

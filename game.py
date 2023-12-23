@@ -41,6 +41,9 @@ class Location:
         self.name = name
         self.tasks = tasks
 
+    def __eq__(self, __value: object) -> bool:
+        return self.name == __value.name
+
 class Player:
     def __init__(self, name) -> None:
         self.name = name
@@ -85,6 +88,14 @@ class Crewmate(Player):
             case "didTask({player}, {task}) & task({location}, {task})":
                 player = random.choice([p for p in game.players if not isinstance(p, Body)])
                 return message.format(player = player.get_name(), task = player.task, location = player.location.name)
+            case "deadAt({player}, {location})":
+                player = [p for p in game.players if isinstance(p, Body)][0]
+                return message.format(player = player.get_name(), location = player.location.name)
+            case "-deadAt({player}, {location})":
+                player = random.choice([p for p in game.players if not isinstance(p, Body)])
+                return message.format(player = player.get_name(), location = player.location.name)
+            case _:
+                return ""
 
     def get_role(self):
         return "Crewmate"
@@ -100,6 +111,8 @@ class Imposter(Player):
             case "didTask({player}, {task}) & task({location}, {task})":
                 player = random.choice([p for p in game.players if not isinstance(p, Body)])
                 return message.format(player = player.get_name(), task = random.choice(game.tasks), location = random.choice(game.locations).name)
+            case "deadAt({player}, {location})" | "-deadAt({player}, {location})":
+                return message.format(player = random.choice(game.players).name, location = random.choice(game.locations).name)
             # case "crewmate({player})" | "-imposter({player})":
             #     return message.format(player = (random.choice([p for p in game.players if isinstance(p, Imposter)])).get_name())
             # case "imposter({player})" | "-crewmate({player})":
@@ -180,6 +193,60 @@ class Game:
 
             message += locations_list1 + locations_list2
 
+        if hasattr(self, "dead_player"):
+            for p in self.players:
+                seen_messages = ""
+                task_messages = ""
+                for i in range(len(self.locations)):
+                    seen_messages += "("
+                    task_messages += "("
+                    for j in range(len(self.locations)):
+                        if self.locations[i] == self.locations[j]:
+                            seen_messages += "seenAt({player}, {location})".format(player = p.name, location = self.locations[j].name)
+                            task_messages += "didTask({player}, {location})".format(player = p.name, location = self.locations[j].name)
+                        else:
+                            seen_messages += "-seenAt({player}, {location})".format(player = p.name, location = self.locations[j].name)
+                            task_messages += "-didTask({player}, {location})".format(player = p.name, location = self.locations[j].name)
+                        if j != len(self.locations) - 1:
+                            seen_messages += " & "
+                            task_messages += " & "
+                    seen_messages += ")"
+                    task_messages += ")"
+                    if i == len(self.locations) - 1:
+                        seen_messages += ".\n\t"
+                        task_messages += ".\n\t"
+                    else:
+                        seen_messages += " | "
+                        task_messages += " | "
+                message += seen_messages
+                message += task_messages
+
+            for p in self.players:
+                seen_messages = ""
+                dead_messages = ""
+                for i in range(len(self.locations)):
+                    loc = self.locations[i]
+
+                    if p.location == loc:
+                        seen_messages += "seenAt({player}, {location})".format(player = p.name, location = loc.name)
+                    else:
+                        seen_messages += "-seenAt({player}, {location})".format(player = p.name, location = loc.name)
+
+                    if isinstance(p, Body) and p.location == loc:
+                        dead_messages += "deadAt({player}, {location})".format(player = p.name, location = loc.name)
+                    else:
+                        dead_messages += "-deadAt({player}, {location})".format(player = p.name, location = loc.name)
+
+                    if i == len(self.locations) - 1:
+                        seen_messages += ".\n\t"
+                        dead_messages += ".\n\t"
+                    else:
+                        seen_messages += " & "
+                        dead_messages += " & "
+
+                message += seen_messages
+                message += dead_messages
+
         return message
 
     def get_messages(self):
@@ -215,6 +282,7 @@ class Game:
         
         if data["dead_player"]:
             self.players.append(Body(players.pop()))
+            self.dead_player = True
 
         for _ in players:
             self.players.append(Crewmate(players.pop()))
@@ -284,6 +352,6 @@ def run_mace4():
     return result  
 
 if __name__ == "__main__":
-    game = Game("data2.json")
+    game = Game("data3.json")
 
     game.run_game()

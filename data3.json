@@ -1,0 +1,38 @@
+{
+    "max_models": -1,
+    "dead_player": true,
+    "players": ["red", "black", "green"],
+    "tasks": [
+        "EmptyGarbage",
+        "FixWiring",
+        "SwipeCard"
+    ],
+    "locations": [
+        {
+            "name": "Cafeteria",
+            "tasks": [
+                "EmptyGarbage",
+                "FixWiring"
+            ]
+        },
+        {
+            "name": "Security",
+            "tasks": [
+                "FixWiring"
+            ]
+        }, 
+        {
+            "name": "Admin",
+            "tasks": [
+                "FixWiring",
+                "SwipeCard"
+            ]
+        }
+    ],
+    "template": "template3.in",
+    "messages": [
+        "deadAt({player}, {location})",
+        "-deadAt({player}, {location})",
+        "didTask({player}, {task}) & task({location}, {task})"
+    ]
+}
