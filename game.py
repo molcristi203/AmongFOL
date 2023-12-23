@@ -94,6 +94,12 @@ class Crewmate(Player):
             case "-deadAt({player}, {location})":
                 player = random.choice([p for p in game.players if not isinstance(p, Body)])
                 return message.format(player = player.get_name(), location = player.location.name)
+            case "vent({player}, {location})":
+                player = random.choice([p for p in game.players if isinstance(p, Imposter)])
+                return message.format(player = player.name, location = player.location.name)
+            case "-vent({player}, {location})":
+                player = random.choice([p for p in game.players if isinstance(p, Crewmate)])
+                return message.format(player = player.name, location = player.location.name)
             case _:
                 return ""
 
@@ -113,6 +119,10 @@ class Imposter(Player):
                 return message.format(player = player.get_name(), task = random.choice(game.tasks), location = random.choice(game.locations).name)
             case "deadAt({player}, {location})" | "-deadAt({player}, {location})":
                 return message.format(player = random.choice(game.players).name, location = random.choice(game.locations).name)
+            case "vent({player}, {location})" | "-vent({player}, {location})":
+                return message.format(player = random.choice(game.players).name, location = random.choice(game.locations).name)
+            case _:
+                return ""
             # case "crewmate({player})" | "-imposter({player})":
             #     return message.format(player = (random.choice([p for p in game.players if isinstance(p, Imposter)])).get_name())
             # case "imposter({player})" | "-crewmate({player})":
@@ -247,6 +257,32 @@ class Game:
                 message += seen_messages
                 message += dead_messages
 
+        if hasattr(self, "vents"):
+            for p in self.players:
+                vent_messages = ""
+                seen_messages = ""
+                for i in range(len(self.locations)):
+                    seen_messages += "seenVenting({player}, {location}) | -seenVenting({player}, {location})".format(player = p.name, location = self.locations[i].name)
+                    vent_messages += "vent({player}, {location}) | -vent({player}, {location})".format(player = p.name, location = self.locations[i].name)
+
+                    if i == len(self.locations) - 1:
+                        seen_messages += ".\n\t"
+                        vent_messages += ".\n\t"
+                    else:
+                        seen_messages += " | "
+                        vent_messages += " | "
+
+                message += seen_messages
+                message += vent_messages
+
+            for p in self.players:
+                seen_messages = ""
+                for i in range(len(self.locations)):
+                    if isinstance(p, Imposter) and p.location.name == self.locations[i].name:
+                        seen_messages += "seenVenting({player}, {location})".format(player = p.name, location = self.locations[i].name)
+                    else:
+                        seen_messages += "-seenVenting({player}, {location})".format(player = p.name, location = self.locations[i].name)    
+
         return message
 
     def get_messages(self):
@@ -294,6 +330,9 @@ class Game:
 
                 p.location = location
                 p.task = task
+
+        if data["vents"]:
+            self.vents = True
 
         f = open(data["template"], "r")
         self.template = f.read()
@@ -352,6 +391,6 @@ def run_mace4():
     return result  
 
 if __name__ == "__main__":
-    game = Game("data3.json")
+    game = Game("data4.json")
 
     game.run_game()

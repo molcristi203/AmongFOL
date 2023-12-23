@@ -1,6 +1,7 @@
 {
     "max_models": -1,
     "dead_player": false,
+    "vents": false,
     "players": ["red", "black"],
     "template": "template1.in",
     "messages": [

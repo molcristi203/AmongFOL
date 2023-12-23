@@ -1,8 +1,8 @@
 {
     "max_models": -1,
     "dead_player": false,
+    "vents": true,
     "players": ["red", "black"],
-    "vents": false,
     "tasks": [
         "EmptyGarbage",
         "FixWiring"
@@ -22,8 +22,10 @@
             ]
         }
     ],
-    "template": "template2.in",
+    "template": "template4.in",
     "messages": [
-        "didTask({player}, {task}) & task({location}, {task})"
+        "didTask({player}, {task}) & task({location}, {task})",
+        "vent({player}, {location})",
+        "-vent({player}, {location})"
     ]
 }

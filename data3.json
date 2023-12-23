@@ -2,6 +2,7 @@
     "max_models": -1,
     "dead_player": true,
     "players": ["red", "black", "green"],
+    "vents" : false,
     "tasks": [
         "EmptyGarbage",
         "FixWiring",
