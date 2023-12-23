@@ -1,0 +1,46 @@
+{
+    "max_models": 50000,
+    "dead_player": true,
+    "vents": true,
+    "players": ["red", "black", "green"],
+    "tasks": [
+        "EmptyGarbage",
+        "FixWiring",
+        "AcceptDivertedPower"
+    ],
+    "locations": [
+        {
+            "name": "Cafeteria",
+            "tasks": [
+                "EmptyGarbage",
+                "FixWiring",
+                "DownloadData"
+            ]
+        },
+        {
+            "name": "Security",
+            "tasks": [
+                "FixWiring",
+                "AcceptDivertedPower"
+            ]
+        },
+        {
+            "name": "Weapons",
+            "tasks": [
+                "AcceptDivertedPower"
+            ]
+        }
+    ],
+    "template": "template4.in",
+    "messages": [
+        "didTask({player}, {task}) & task({location}, {task})",
+        "vent({player}, {location})",
+        "-vent({player}, {location})",
+        "deadAt({player}, {location})",
+        "-deadAt({player}, {location})",
+        "crewmate({player})",
+        "imposter({player})",
+        "-crewmate({player})",
+        "-imposter({player})"
+    ]
+}

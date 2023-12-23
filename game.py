@@ -320,7 +320,7 @@ class Game:
             self.players.append(Body(players.pop()))
             self.dead_player = True
 
-        for _ in players:
+        for i in range(len(players)):
             self.players.append(Crewmate(players.pop()))
         
         for p in self.players:
@@ -391,6 +391,6 @@ def run_mace4():
     return result  
 
 if __name__ == "__main__":
-    game = Game("data4.json")
+    game = Game("data5.json")
 
     game.run_game()
