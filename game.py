@@ -57,7 +57,7 @@ class Player:
         final_message = "message({player})<->".format(player = self.name)
         global game
 
-        messages = random.sample(game.get_messages(), random.randint(1, min(4, len(game.get_messages()))))
+        messages = random.sample(game.get_messages(), random.randint(2, min(6, len(game.get_messages()))))
 
         for i in range(len(messages)):
             final_message += self.interpret_message(messages[i])
@@ -282,6 +282,13 @@ class Game:
                         seen_messages += "seenVenting({player}, {location})".format(player = p.name, location = self.locations[i].name)
                     else:
                         seen_messages += "-seenVenting({player}, {location})".format(player = p.name, location = self.locations[i].name)    
+
+                    if i == len(self.locations) - 1:
+                        seen_messages += ".\n\t"
+                    else:
+                        seen_messages += " & "
+
+                message += seen_messages
 
         return message
 

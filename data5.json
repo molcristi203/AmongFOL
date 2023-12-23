@@ -1,5 +1,5 @@
 {
-    "max_models": 50000,
+    "max_models": 100000,
     "dead_player": true,
     "vents": true,
     "players": ["red", "black", "green"],
